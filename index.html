@@ -336,7 +336,7 @@
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSPy1Mt5ed54mYAEf2B0x1DgipH4JyTSucEcvk6qXlNceAjo0S6--LGXnf63gdX1qg9A/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiIOj-sloA-v7D07KTzCR--18M1DlIHrRJGysE49csKQPaQG0JGZ0ZA3PJnHNg5cyDuQ/exec';
 
 let items = [];
 let sales = [];
@@ -379,10 +379,10 @@ async function loadData() {
 async function saveData() {
   setSyncStatus('syncing', 'جاري الحفظ...');
   try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'save', items, sales })
-    });
+    const payload = encodeURIComponent(JSON.stringify({ action: 'save', items: items.map(i => ({...i, img: undefined})), sales }));
+    const url = SCRIPT_URL + '?data=' + payload + '&t=' + Date.now();
+    const res = await fetch(url, { method: 'GET', redirect: 'follow' });
+    await res.json();
     setSyncStatus('ok', 'تم الحفظ في Google Sheets ✓');
   } catch (err) {
     setSyncStatus('error', 'خطأ في الحفظ');
